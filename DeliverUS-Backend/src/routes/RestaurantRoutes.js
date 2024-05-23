@@ -34,6 +34,16 @@ const loadFileRoutes = function (app) {
       RestaurantValidation.update,
       handleValidation,
       RestaurantController.update)
+    .patch(
+      isLoggedIn,
+      hasRole('owner'),
+      checkEntityExists(Restaurant, 'restaurantId'),
+      RestaurantMiddleware.checkRestaurantOwnership,
+      RestaurantMiddleware.restaurantHasNoDelivered,
+      handleFilesUpload(['logo', 'heroImage'], process.env.RESTAURANTS_FOLDER),
+      RestaurantValidation.update,
+      handleValidation,
+      RestaurantController.changeStatus)
     .delete(
       isLoggedIn,
       hasRole('owner'),

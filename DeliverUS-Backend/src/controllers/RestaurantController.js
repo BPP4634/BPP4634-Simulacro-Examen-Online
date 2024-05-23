@@ -10,7 +10,7 @@ const index = async function (req, res) {
         model: RestaurantCategory,
         as: 'restaurantCategory'
       },
-        order: [[{ model: RestaurantCategory, as: 'restaurantCategory' }, 'name', 'ASC']]
+        order: [['status', 'ASC'], [{ model: RestaurantCategory, as: 'restaurantCategory' }, 'name', 'ASC']]
       }
     )
     res.json(restaurants)
@@ -80,6 +80,17 @@ const update = async function (req, res) {
   }
 }
 
+const changeStatus = async function (req, res) {
+  try {
+    req.body.status = req.body.status === 'online' ? 'offline' : 'online'
+    await Restaurant.update(req.body, { where: { id: req.params.restaurantId } })
+    const updatedRestaurant = await Restaurant.findByPk(req.params.restaurantId)
+    res.json(updatedRestaurant)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+
 const destroy = async function (req, res) {
   try {
     const result = await Restaurant.destroy({ where: { id: req.params.restaurantId } })
@@ -101,6 +112,7 @@ const RestaurantController = {
   create,
   show,
   update,
-  destroy
+  destroy,
+  changeStatus
 }
 export default RestaurantController
